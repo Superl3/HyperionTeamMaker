@@ -1,5 +1,6 @@
 #include "ConfigureMember.h"
 
+#include "defines.h"
 
 #include <QBoxLayout>
 #include <QListView>

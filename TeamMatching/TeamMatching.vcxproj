@@ -86,16 +86,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <QtRcc Include="TeamMatching.qrc" />
-    <QtUic Include="TeamMatching.ui" />
     <QtMoc Include="TeamMatching.h" />
     <ClCompile Include="ConfigureMember.cpp" />
+    <ClCompile Include="CreateTeam.cpp" />
     <ClCompile Include="Member.cpp" />
     <ClCompile Include="TeamMatching.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="ConfigureMember.h" />
+    <QtMoc Include="CreateTeam.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="Member.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

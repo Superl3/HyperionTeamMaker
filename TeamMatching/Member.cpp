@@ -35,8 +35,8 @@ QString Member::toString()
 
 void Member::setText()
 {
-	QString syntax = name + QString::number(Damage.getRank()) + '/' +
-		QString::number(Tank.getRank()) + '/' +
+	QString syntax = name + '\t' + QString::number(Damage.getRank()) + " / " +
+		QString::number(Tank.getRank()) + " / " +
 		QString::number(Support.getRank());
 
 	QListWidgetItem::setText(syntax);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QMainWindow>
-#include "ui_TeamMatching.h"
 
 class TeamMatching : public QMainWindow
 {
@@ -13,7 +12,4 @@ public:
 public slots:
 	void slotOpenConfigureDialog();
 	void slotOpenCreateTeamDialog();
-
-private:
-    Ui::TeamMatchingClass ui;
 };

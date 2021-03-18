@@ -49,7 +49,7 @@ public slots:
 
 private:
 	QListWidget *memberList = nullptr;
-	QString memberPath = "memberList.txt";
+	
 
 private:
 	Member* getSelectedMember();
