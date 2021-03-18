@@ -8,6 +8,7 @@ class Member;
 class QListWidget;
 class QComboBox;
 class QTimer;
+class QLineEdit;
 
 class CreateTeam : public QDialog {
 	Q_OBJECT
@@ -28,11 +29,16 @@ public slots:
 private:
 	void load();
 	void filter();
+	void initUI();
 
-	QMap<QString, Member*> members;
-	QListWidget *totalMemberList;
-	QListWidget *gameMemberList;
+	QMap<QString, Member*> totalMembers;
+	QMap<QString, Member*> gameMembers;
 
-	QComboBox *roundComboBox;
-	QTimer *searchTimer;
+	QListWidget *totalMemberList = nullptr;
+	QListWidget *gameMemberList = nullptr;
+
+	QLineEdit *searchEdit = nullptr;
+
+	QComboBox *roundComboBox = nullptr;
+	QTimer *searchTimer = nullptr;
 };
