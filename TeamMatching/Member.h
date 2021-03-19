@@ -47,19 +47,6 @@ public:
 
 	void setText();
 
-// 	struct rankCompare {
-// 	public:
-// 		explicit rankCompare(QString _position) : position(_position) {}
-// 		bool operator () (Member const &a, Member const &b) const {
-// 			if (position == "Damage")
-// 				return a.Damage.best > b.Damage.best;
-// 			else if (position == "Tank")
-// 				return a.Tank.best > b.Tank.best;
-// 			else
-// 				return a.Support.best > b.Support.best;
-// 		}
-// 		QString position;
-// 	};
 	static struct rankCompare {
 	public:
 		explicit rankCompare(QString _pos) : pos(_pos) {}

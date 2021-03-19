@@ -90,10 +90,12 @@
     <ClCompile Include="ConfigureMember.cpp" />
     <ClCompile Include="CreateTeam.cpp" />
     <ClCompile Include="Member.cpp" />
+    <ClCompile Include="Team.cpp" />
     <ClCompile Include="TeamMatching.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Team.h" />
     <QtMoc Include="ConfigureMember.h" />
     <QtMoc Include="CreateTeam.h" />
     <ClInclude Include="defines.h" />

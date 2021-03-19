@@ -46,12 +46,18 @@
     <ClCompile Include="CreateTeam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Team.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Member.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Team.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
