@@ -4,6 +4,8 @@
 #include <QMap>
 #include <QString>
 
+#include "Team.h"
+
 class Member;
 class QListWidget;
 class QComboBox;
@@ -31,6 +33,8 @@ private:
 	void filter();
 	void initUI();
 
+	void start();
+
 	QMap<QString, Member*> totalMembers;
 	QMap<QString, Member*> gameMembers;
 
@@ -41,4 +45,6 @@ private:
 
 	QComboBox *roundComboBox = nullptr;
 	QTimer *searchTimer = nullptr;
+
+	Team A, B;
 };

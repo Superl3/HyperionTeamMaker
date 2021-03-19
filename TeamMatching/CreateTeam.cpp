@@ -41,6 +41,8 @@ void CreateTeam::slotGoUp()
 		totalMembers.insert(member->getName(), member);
 		totalMemberList->addItem(member);
 	}
+
+	filter();
 	totalMemberList->sortItems();
 }
 
@@ -80,10 +82,28 @@ void CreateTeam::slotReset()
 	totalMemberList->sortItems();
 }
 
+
+
 void CreateTeam::slotCreateTeam()
 {
-	accepted();
-	close();
+	gameMembers.clear();
+	int count = gameMemberList->count();
+	for (int i = 0; i < count; i++) {
+		auto member = dynamic_cast<Member*>(gameMemberList->item(i));
+		if (!member) continue;
+
+		gameMembers.insert(member->getName(), member);
+	}
+
+	start();
+	if (gameMembers.count() < 12) {
+		QMessageBox(QMessageBox::Icon::Critical, QString::fromLocal8Bit("오류"), QString::fromLocal8Bit("인원을 12명 이상으로 설정 해 주세요.")).exec();
+		return;
+	}
+	else {
+		accepted();
+		close();
+	}
 }
 
 void CreateTeam::slotCancel()
@@ -192,4 +212,30 @@ void CreateTeam::initUI()
 	auto pBtnCancel = new QPushButton(QString::fromLocal8Bit("취소"));
 	QObject::connect(pBtnCancel, &QPushButton::clicked, this, &CreateTeam::slotCancel);
 	pMainBtnLayout->addWidget(pBtnCancel);
+}
+
+
+
+void CreateTeam::start()
+{
+	int min = -1;
+	std::function<void(const QList<Member*>&, QList<Member*>)> getDPSMate = [&](const QList<Member*> &players, QList<Member*> mate) {
+		if (mate.size() == 4) {
+			for (int i = 0; i < 4; i++) {
+				for (int j = i+1; j < 4; j++) {
+					int sum =	std::pow(mate[i]->getDamageRank(), 1.5)
+							+	std::pow(mate[j]->getDamageRank(), 1.5);
+				}
+			}
+		}
+		for (const auto &member : players) {
+			mate.push_back(member);
+			getDPSMate(players, mate);
+			mate.removeAll(member);
+		}
+	};
+	auto playerList = gameMembers.values();
+
+	std::sort(playerList.begin(), playerList.end(), Member::rankCompare("Damage"));
+	return;
 }
