@@ -5,6 +5,29 @@
 
 class Position {
 public:
+	enum Types {
+		TANKER = 0,
+		DEALER,
+		SUPPORTER,
+		Default
+	};
+	static Types getNextType(Types type) {
+		Types nextType;
+		switch (type) {
+		case Position::TANKER:
+			nextType = SUPPORTER;
+			break;
+		case Position::DEALER:
+			nextType = TANKER;
+			break;
+		case Position::SUPPORTER:
+			nextType = Default;
+			break;
+		default:
+			assert(false);
+		}
+		return nextType;
+	}
 	enum Heroes {
 		GENJI = 0, DOOMFIST, REAPER, MCCREE, MEI, BASTION, SOLDIER76, SOMBRA, SYMMETRA, ASHE, ECHO, WIDOWMAKER, JUNKRAT, TORBJORN, TRACER, PHARAH, HANZO,
 		DVA, REINHARDT, WRECKINGBALL, ROADHOG, SIGMA, ORISA, WINSTON, ZARYA,
@@ -41,24 +64,38 @@ public:
 	QString toString();
 
 	QString getName() { return name; }
-	int getDamageRank() { return Damage.getRank(); }
+
 	int getTankRank() { return Tank.getRank(); }
+	int getDamageRank() { return Damage.getRank(); }
 	int getSupportRank() { return Support.getRank(); }
+
+	int getRank(Position::Types type) {
+		int requestedScore;
+		switch (type) {
+		case Position::TANKER:
+			requestedScore = getTankRank();
+			break;
+		case Position::DEALER:
+			requestedScore = getDamageRank();
+			break;
+		case Position::SUPPORTER:
+			requestedScore = getSupportRank();
+			break;
+		default:
+			assert(false);
+		}
+		return requestedScore;
+	}
 
 	void setText();
 
 	static struct rankCompare {
 	public:
-		explicit rankCompare(QString _pos) : pos(_pos) {}
+		explicit rankCompare(Position::Types _type) : type(_type) {}
 		bool operator () (Member *a, Member *b) const {
-			if (pos == "Damage")
-				return a->getDamageRank() > b->getDamageRank();
-			else if (pos == "Tank")
-				return a->getTankRank() > b->getTankRank();
-			else
-				return a->getSupportRank() > b->getSupportRank();
+			return a->getRank(type) > b->getRank(type);
 		}
-		QString pos;
+		Position::Types type;
 	};
 
 private:

@@ -89,7 +89,7 @@ Member* ConfigureMember::getSelectedMember()
 void ConfigureMember::load()
 {
 	do {
-		QFile memberFile{ memberPath };
+		QFile memberFile{ MemberPath };
 		if (!memberFile.exists()) break;
 
 		if (!memberFile.open(QFile::ReadOnly)) break;
@@ -110,7 +110,7 @@ void ConfigureMember::load()
 void ConfigureMember::save()
 {
 	do {
-		QFile memberFile{memberPath};
+		QFile memberFile{MemberPath};
 	 	memberFile.open(QIODevice::WriteOnly);
 
 		QTextStream out(&memberFile);

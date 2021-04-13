@@ -1,6 +1,6 @@
 #include "TeamMatching.h"
 #include "ConfigureMember.h"
-#include "CreateTeam.h"
+#include "CreateTeamDialog.h"
 
 #include <QBoxLayout>
 #include <QPushButton>
@@ -37,7 +37,7 @@ void TeamMatching::slotOpenConfigureDialog()
 
 void TeamMatching::slotOpenCreateTeamDialog()
 {
-	auto dialog = new CreateTeam();
+	auto dialog = new CreateTeamDialog();
 	dialog->exec();
 
 	delete dialog;

@@ -29,7 +29,7 @@
     <ClCompile Include="TeamMatching.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <QtMoc Include="CreateTeam.h">
+    <QtMoc Include="CreateTeamDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -43,10 +43,10 @@
     <ClCompile Include="Member.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CreateTeam.cpp">
+    <ClCompile Include="Team.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Team.cpp">
+    <ClCompile Include="CreateTeamDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
