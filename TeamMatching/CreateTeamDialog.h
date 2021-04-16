@@ -3,6 +3,8 @@
 #include <QDialog>
 #include <QMap>
 #include <QString>
+#include <QFile>
+#include <QTextStream>
 
 #include "Team.h"
 
@@ -47,13 +49,17 @@ private:
 	QTimer *searchTimer = nullptr;
 
 	Team A, B;
-	void createTwoTeam(QList<Member *> teamA, QList<Member *> teamB);
-	void pickFromTeamA(QList<Member *> teamA, QList<Member *> teamB);
-	void pickFromTeamB(QList<Member *> teamA, QList<Member *> teamB);
-	void pickPositionFromBothTeam(QList<Member *> teamA, QList<Member *> teamB, Position::Types type);
+	void createTwoTeam(const QList<Member*> &totalPlayer, QList<Member *> teamA, QVector<bool> visit);
+	void pickPositionFromBothTeam(QList<Member *> teamA, QList<Member *> teamB, QVector<bool> aVisit, QVector<bool> bVisit, Position::Types type);
 
 	bool checkTeamBalance();
 	bool checkPositionBalance(QList<Member *> teamAPlayers, QList<Member *> teamBPlayers, Position::Types type);
-	bool doesTeamMakingDone(QList<Member *> teamA, QList<Member *> teamB, Position::Types type);
+	bool doesTeamMakingDone(Position::Types type);
 	bool checkTwoTeamsCreated(QList<Member *> teamA, QList<Member *> teamB);
+	void saveMatchMakingResult();
+
+	QFile matchFile;
+	QTextStream out;
+	int matchLeft = 0;
+	QList<Member *> createTeamBFromTeamA(const QList<Member *> & totalPlayer, QList<Member *> teamA);
 };

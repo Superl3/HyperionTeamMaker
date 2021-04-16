@@ -152,8 +152,8 @@ MemberDialog::MemberDialog(Member *_member) : member(_member)
 
 	nameEdit->setText(member->getName());
 
-	dealerEdit->setText(QString::number(member->getDamageRank()));
 	tankerEdit->setText(QString::number(member->getTankRank()));
+	dealerEdit->setText(QString::number(member->getDamageRank()));
 	supportEdit->setText(QString::number(member->getSupportRank()));
 }
 
@@ -180,11 +180,11 @@ Member * MemberDialog::getMember()
 
 void MemberDialog::checkScore()
 {
-	if (dealerEdit->text().toInt() < 0 || dealerEdit->text().toInt() > 5000)
-		dealerEdit->undo();
-
 	if (tankerEdit->text().toInt() < 0 || tankerEdit->text().toInt() > 5000)
 		tankerEdit->undo();
+
+	if (dealerEdit->text().toInt() < 0 || dealerEdit->text().toInt() > 5000)
+		dealerEdit->undo();
 
 	if (supportEdit->text().toInt() < 0 || supportEdit->text().toInt() > 5000)
 		supportEdit->undo();
@@ -193,8 +193,9 @@ void MemberDialog::checkScore()
 void MemberDialog::save()
 {
 	QString name = nameEdit->text();
-	int dealer = dealerEdit->text().toInt();
+
 	int tanker = tankerEdit->text().toInt();
+	int dealer = dealerEdit->text().toInt();
 	int healer = supportEdit->text().toInt();
 
 	if (name.length() < 2) {
@@ -234,6 +235,15 @@ void MemberDialog::initUI()
 	auto pScoreLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	pMainLayout->addLayout(pScoreLayout);
 
+	auto pTankerGroupbox = new QGroupBox(QString::fromLocal8Bit("ÅÊÄ¿"));
+	pScoreLayout->addWidget(pTankerGroupbox);
+
+	auto pTankerLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+	pTankerGroupbox->setLayout(pTankerLayout);
+
+	tankerEdit = new QLineEdit();
+	pTankerLayout->addWidget(tankerEdit);
+
 	auto pDealerGroupbox = new QGroupBox(QString::fromLocal8Bit("µô·¯"));
 	pScoreLayout->addWidget(pDealerGroupbox);
 
@@ -243,15 +253,6 @@ void MemberDialog::initUI()
 	dealerEdit = new QLineEdit();
 	QObject::connect(dealerEdit, &QLineEdit::textChanged, this, &MemberDialog::checkScore);
 	pDealerLayout->addWidget(dealerEdit);
-
-	auto pTankerGroupbox = new QGroupBox(QString::fromLocal8Bit("ÅÊÄ¿"));
-	pScoreLayout->addWidget(pTankerGroupbox);
-
-	auto pTankerLayout = new QBoxLayout(QBoxLayout::TopToBottom);
-	pTankerGroupbox->setLayout(pTankerLayout);
-
-	tankerEdit = new QLineEdit();
-	pTankerLayout->addWidget(tankerEdit);
 
 	auto pSupportGroupbox = new QGroupBox(QString::fromLocal8Bit("Èú·¯"));
 	pScoreLayout->addWidget(pSupportGroupbox);

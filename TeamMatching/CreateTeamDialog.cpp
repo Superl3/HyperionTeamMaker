@@ -219,96 +219,86 @@ void CreateTeamDialog::initUI()
 void CreateTeamDialog::start()
 {
 	auto playerList = gameMembers.values();
+	matchLeft = roundComboBox->currentIndex()+1;
+	if (matchLeft == 6) matchLeft = 9999;
 
-	QList<Member*> teamA = playerList;
-	QList<Member*> teamB;
+	QFile matchFile{ MatchPath };
+	matchFile.open(QFile::WriteOnly);
+	matchFile.close();
 
-	createTwoTeam(teamA, teamB);
+	QList<Member*> teamA;
+	
+	QVector<bool> playerVisit;
+	playerVisit.fill(false, playerList.size());
+
+	createTwoTeam(playerList, teamA, playerVisit);
 	return;
 }
 
-void CreateTeamDialog::createTwoTeam(QList<Member *> teamA, QList<Member *> teamB)
+void CreateTeamDialog::createTwoTeam(const QList<Member*> &totalPlayer, QList<Member *> teamA, QVector<bool> visit)
 {
-	if (checkTwoTeamsCreated(teamA,teamB)) {
-		pickFromTeamA(teamA, teamB);
+	if (checkTwoTeamsCreated(totalPlayer, teamA)) {
+		auto teamB = createTeamBFromTeamA(totalPlayer, teamA);
+
+		QVector<bool> a, b;
+		a.fill(false, teamA.size());
+		b.fill(false, teamB.size());
+
+		pickPositionFromBothTeam(teamA, teamB, a, b, Position::DEALER);
 		return;
 	}
-	for (const auto &member : teamA) {
-		teamA.removeAll(member);
-		teamB.push_back(member);
-		createTwoTeam(teamA, teamB);
-		teamA.push_back(member);
-		teamB.removeAll(member);
+	for(int i = 0 ; i <totalPlayer.size();i++) {
+		if (visit[i]) continue;
+		visit[i] = true;
+		teamA.push_back(totalPlayer[i]);
+		createTwoTeam(totalPlayer, teamA, visit);
+		visit[i] = false;
+		teamA.removeAll(totalPlayer[i]);
+		if (matchLeft == 0) return;
 	}
 }
-
-void CreateTeamDialog::pickFromTeamA(QList<Member *> teamA, QList<Member *> teamB)
-{
-	if (teamA.size() == PlayerCountInTeam) {
-		pickFromTeamB(teamA, teamB);
-		return;
-	}
-	for (const auto &member : teamA) {
-		teamA.removeAll(member);
-		pickFromTeamA(teamA, teamB);
-		teamA.push_back(member);
-	}
-}
-
-void CreateTeamDialog::pickFromTeamB(QList<Member *> teamA, QList<Member *> teamB)
-{
-	if (teamB.size() == PlayerCountInTeam) {
-		pickPositionFromBothTeam(teamA, teamB, Position::DEALER);
-		return;
-	}
-	for (const auto &member : teamB) {
-		teamB.removeAll(member);
-		pickFromTeamB(teamA, teamB);
-		teamB.push_back(member);
-	}
-}
-
 bool CreateTeamDialog::checkTeamBalance()
 {
 	return std::abs(A.getRanks() - B.getRanks()) <= RankDiffTotal;
 }
 
-void CreateTeamDialog::pickPositionFromBothTeam(QList<Member *> teamA, QList<Member *> teamB, Position::Types type)
+void CreateTeamDialog::pickPositionFromBothTeam(QList<Member *> teamA, QList<Member *> teamB, QVector<bool> aVisit, QVector<bool> bVisit, Position::Types type)
 {
-	if (doesTeamMakingDone(teamA, teamB, type)) {
+	if (doesTeamMakingDone(type)) {
 		if (checkTeamBalance())
-			assert(false);
+			saveMatchMakingResult();
 		return;
 	}
 
 	int aSize = teamA.size(), bSize = teamB.size();
 	for (int a1 = 0; a1 < aSize; a1++) {
+		if (aVisit[a1]) continue;
 		if (teamA[a1]->getRank(type) == 0) continue;
 		for (int a2 = a1 + 1; a2 < aSize; a2++) {
+			if (aVisit[a2]) continue;
 			if (teamA[a2]->getRank(type) == 0) continue;
 			for (int b1 = 0; b1 < bSize; b1++) {
+				if (bVisit[b1]) continue;
 				if (teamB[b1]->getRank(type) == 0) continue;
 				for (int b2 = b1 + 1; b2 < bSize; b2++) {
-					if (teamB[a2]->getRank(type) == 0) continue;
+					if (bVisit[b2]) continue;
+					if (teamB[b2]->getRank(type) == 0) continue;
 
 					auto teamAPartner = { teamA[a1], teamA[a2] };
 					auto teamBPartner = { teamB[b1], teamB[b2] };
 					if (!checkPositionBalance(teamAPartner, teamBPartner, type)) continue;
 
-					for (const auto player : teamAPartner)
-						teamA.removeAll(player);
-					for (const auto player : teamBPartner)
-						teamB.removeAll(player);
+					aVisit[a1] = aVisit[a2] = true;
+					bVisit[b1] = bVisit[b2] = true;
 
 					A.setPosition(teamAPartner, type);
 					B.setPosition(teamBPartner, type);
 					
-					pickPositionFromBothTeam(teamA, teamB, Position::getNextType(type));
+					pickPositionFromBothTeam(teamA, teamB, aVisit, bVisit, Position::getNextType(type));
+					if (matchLeft == 0) return;
 
-					for (const auto player : teamAPartner)
-						teamA.push_back(player);
-					for (const auto player : teamBPartner)
-						teamB.push_back(player);
+					aVisit[a1] = aVisit[a2] = false;
+					bVisit[b1] = bVisit[b2] = false;
 				}
 			}
 		}
@@ -328,12 +318,35 @@ bool CreateTeamDialog::checkPositionBalance(QList<Member *> teamAPlayers, QList<
 	return std::abs(teamARankSum - teamBRankSum) <= RankDiffPosition;
 }
 
-bool CreateTeamDialog::doesTeamMakingDone(QList<Member *> teamA, QList<Member *> teamB, Position::Types type) {
-	return teamA.empty() && teamB.empty() && type == Position::Default;
+bool CreateTeamDialog::doesTeamMakingDone(Position::Types type) {
+	return type == Position::Default && A.getMembers().size() == 6 && B.getMembers().size() == 6;
 }
 
-bool CreateTeamDialog::checkTwoTeamsCreated(QList<Member *> teamA, QList<Member *> teamB)
+bool CreateTeamDialog::checkTwoTeamsCreated(QList<Member *> totalPlayer, QList<Member *> teamA)
 {
-	int aSize = teamA.size(), bSize = teamB.size();
+	int aSize = teamA.size(), totalSize = totalPlayer.size(), bSize = totalSize - aSize;
 	return std::abs(aSize - bSize) <= 1 && aSize >= 6 && bSize >= 6;
+}
+
+void CreateTeamDialog::saveMatchMakingResult()
+{
+	QString text = A.getTeam() + '\n' + B.getTeam() + '\n';
+	QFile matchFile{ MatchPath };
+	matchFile.open(QFile::WriteOnly | QIODevice::Append);
+	QTextStream out(&matchFile);
+	out << text << '\n';
+	matchFile.close();
+	
+
+	matchLeft -= 1;
+}
+
+QList<Member *> CreateTeamDialog::createTeamBFromTeamA(const QList<Member *> & totalPlayer, QList<Member *> teamA)
+{
+		QList<Member*> teamB;
+		for (const auto &member : totalPlayer) {
+			if (!teamA.contains(member))
+				teamB.push_back(member);
+		}
+		return teamB;
 }
